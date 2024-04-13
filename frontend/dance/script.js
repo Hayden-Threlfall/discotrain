@@ -24,48 +24,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     console.log("An error occurred: " + err);
   });
 
-  function getAttachmentByTitle(title) {
-    // Step 1: Fetch records based on title value
-    fetch(`https://discotrain.kintone.com/k/v1/records.json?app=${1}&query=title="${title}"`, {
-        method: 'GET',
-        headers: {
-            'X-Cybozu-API-Token': 'qYGRIRpfkjzRVFclHtaHeTQI1eusC7K5y7A0DKi4',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Step 2: Extract record IDs
-        const recordIds = data.records.map(record => record['$id']['value']);
-
-        // Step 3: Fetch record details including attachments
-        recordIds.forEach(recordId => {
-            fetch(`https://discotrain.kintone.com/k/v1/record.json?app=${1}&id=${recordId}`, {
-                method: 'GET',
-                headers: {
-                    'X-Cybozu-API-Token': 'qYGRIRpfkjzRVFclHtaHeTQI1eusC7K5y7A0DKi4',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(recordData => {
-                // Extract attachment URL(s) from record data
-                const attachments = recordData.record['video'].value;
-
-                // Use attachment URL(s) as needed
-                console.log('Attachments:', attachments);
-            })
-            .catch(error => {
-                console.error('Error fetching record details:', error);
-            });
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching records:', error);
-    });
-}
-
-// Usage example: Call getAttachmentByTitle function when button is clicked
-document.getElementById('getAttachmentButton').addEventListener('click', function() {
-    getAttachmentByTitle('video1');
+  document.getElementById("toggleWebcam").addEventListener("click", function() {
+    var webcamContainer = document.getElementById("webcam-container");
+    webcamContainer.classList.toggle("hidden");
 });

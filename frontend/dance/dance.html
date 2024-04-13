@@ -6,36 +6,32 @@
     <title>Join Dance</title>
     <script src="https://kit.fontawesome.com/cad9f871fb.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .video-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    </style>
+    <link rel="stylesheet" href="dance.css">
 </head>
 <body>
 
 <div class="video-container">
-  <div>
-    <h2>Video from File</h2>
-    <video controls>
-        <source src="../videos/dance1.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-      </video>
-  </div>
+    <div class="video-wrapper">
+        <h2>Reccomended: Song Title</h2>
+        <div class="video-row">
+            <video id="file-video" controls>
+                <source src="../videos/dance1.mp4" type="video/mp4">
+            </video>
+            <div class="webcam-wrapper">
+                <div id="webcam-container">
+                    <video id="webcam" autoplay></video>
+                </div>
+            </div>
+        </div>
+        <button id="toggleWebcam">Play!</button>
+    </div>
 
-  <style>
-    #webcam {
-      transform: scaleX(-1);
-    }
-  </style>
+    <!-- <div class="webcam-wrapper">
+        <div id="webcam-container">
+            <video id="webcam" autoplay></video>
+        </div>
+    </div> -->
 
-  <div>
-    <h2>Webcam Access</h2>
-    <video id="webcam" autoplay></video>
-  </div>
 </div>
 
 <script src="script.js"></script>
