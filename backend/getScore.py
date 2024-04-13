@@ -174,21 +174,14 @@ def showVideo(videoPath, keyPoints):
             break
         if count % 20 == 0:
             image = displayPoints(frame, keyPoints[counter])
-            out.write(image)
-            out.write(image)
-            out.write(image)
-            out.write(image)
-            out.write(image)
-            out.write(image)
-            #cv2.imshow("Points", image)
-            #cv2.waitKey(100)   
+            cv2.imshow("Points", image)
+            cv2.waitKey(100)   
             counter += 1
         else:
             image = frame
         count += 1
         
-        out.write(image)
-        #cv2.imshow("Points", image)
+        cv2.imshow("Points", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -198,7 +191,7 @@ def showVideo(videoPath, keyPoints):
     cv2.destroyAllWindows()
 
 
-def showVideo2(videoPath, keyPoints, score):
+def writeVideoWithScore(videoPath, keyPoints, score):
     count = 0
     counter = 0
     cap = cv2.VideoCapture(videoPath)
@@ -230,15 +223,12 @@ def showVideo2(videoPath, keyPoints, score):
             out.write(image)
             out.write(image)
             out.write(image)
-            cv2.imshow("Points", image)
-            cv2.waitKey(100)   
             counter += 1
         else:
             image = frame
         count += 1
         
         out.write(image)
-        #cv2.imshow("Points", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
@@ -248,22 +238,83 @@ def showVideo2(videoPath, keyPoints, score):
     cv2.destroyAllWindows()
 
 
+def displayBothVideos(videoPath, keyPoints, videoPath2, keyPoints2, score):
+    names = [videoPath, videoPath2]
+    window_titles = ["Original Video", "Copy Attempt"]
+
+
+    cap = [cv2.VideoCapture(i) for i in names]
+
+    frames = [None] * len(names)
+    ret = [None] * len(names)
+    count = 0
+    count2 = 0
+    counter = 0
+    counter2 = 0
+
+    while True:
+
+        for i,c in enumerate(cap):
+            if c is not None:
+                ret[i], frames[i] = c.read()
+
+
+        for i,f in enumerate(frames):
+            if ret[i] is True:
+                if i == 0:
+                    if count % 20 == 0:
+                        image = displayPoints(f, keyPoints[counter])
+                        cv2.imshow(window_titles[i], image)
+                        cv2.waitKey(100)   
+                    else:
+                        image = f
+                    count += 1
+                    cv2.imshow(window_titles[i], image)
+                    cv2.waitKey(1)
+                else:
+                    if count2 % 20 == 0:
+                        image2 = displayPoints(f, keyPoints2[counter2])
+                        font = cv2.FONT_HERSHEY_SIMPLEX 
+                        org = (50, 50) 
+                        fontScale = 1
+                        color = (255, 255, 255) 
+                        thickness = 2
+                        image2 = cv2.putText(image2, 'Score: ' + str(score[counter]), org, font, fontScale, color, thickness, cv2.LINE_AA)
+                        counter += 1
+                        cv2.imshow(window_titles[i], image2)
+                        cv2.waitKey(500)   
+                    else:
+                        image2 = f
+                    count2 += 1
+                    cv2.imshow(window_titles[i], image2)
+                    cv2.waitKey(1)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+
+    for c in cap:
+        if c is not None:
+            c.release()
+
+    cv2.destroyAllWindows()
+
 #keyPoints = getVideoKeyPoints("Grace1.mp4")
 #writeToFile("Grace1.mp4", keyPoints)
 #keyPoints = getVideoKeyPoints("Grace2.mp4")
 #writeToFile("Grace2.mp4", keyPoints)
-#keyPoints = getVideoKeyPoints("Andrew1.mp4")
 #writeToFile("Andrew1.mp4", keyPoints)
 #print(keyPoints)
 keypoints = readKeyPoints("Grace1Points.txt")
 #showVideo("Grace1.mp4", keypoints)
 keypoints2 = readKeyPoints("Grace2Points.txt")
 
-keypoints2 = centerModels(keypoints, keypoints2)
+#keypoints2 = readKeyPoints("Andrew1Points.txt")
+
+#keypoints2 = centerModels(keypoints, keypoints2)
 
 score = getScore2(keypoints, keypoints2)
 
-showVideo2("Grace2.mp4", keypoints2, score)
+displayBothVideos("Grace1.mp4", keypoints, "Grace2.mp4", keypoints2, score)
 
 '''
 score = getScore(keypoints, keypoints2)
