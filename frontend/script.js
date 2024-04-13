@@ -2,6 +2,8 @@ $(document).ready(function(){
     $('.carousel').carousel();
   });
 
+var featured; 
+
 function toggleVideo() {
     const preview = document.querySelector('.preview');
     const video = document.querySelector('video');
@@ -21,7 +23,7 @@ function updateImage(index) {
         ["MKTO", "2013", "Pop", "2:54"]
     ];
     const descriptions = [
-        "This is a song description 1.",
+        "This is a song desciption. Just Dance is a song. The song. The best song ever written. OMG. Lady Gaga.",
         "This is a song description 2.",
         "This is a song description 3.",
         "This is a song description 4.",
@@ -37,6 +39,8 @@ function updateImage(index) {
 
         bannerImage.src = "images/" + images[index];
         songTitle.innerHTML = "<i>" + titles[index] + "</i>";
+
+        featured = index;
 
         // Update spans
         spansElements.forEach((spanElement, i) => {
