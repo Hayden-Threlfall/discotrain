@@ -1,11 +1,11 @@
-import super_gradients
-from super_gradients.training import models
+#import super_gradients
+#from super_gradients.training import models
 import math
 import time
 import cv2
 import json
 import numpy
-
+'''
 def getKeyPoints(image1):
     model = models.get("yolo_nas_pose_l", pretrained_weights="coco_pose")
     prediction = model.predict(image1)
@@ -34,53 +34,74 @@ def getMultipleKeyPoints(image1, image2):
         pose2.append((x, y))
 
     return pose1, pose2
-
+'''
 def getScore(pose1, pose2):
     if len(pose1) != len(pose2):
-        print("ERROR: Poses have different dimensions.")
-        return -1
-    distance = 0
-    for i in range(0, len(pose1)):
-        distance += math.dist(pose1[i], pose2[i])
+        if len(pose1) < len(pose2):
+            count = len(pose1)
+        else:
+            count = len(pose2)
+    else:
+        count = len(pose1)
+    distance = 0.0
+    for i in range(0, count):
+        print((int(pose1[i][0][0]), int(pose1[i][0][1])))
+        print((int(pose2[i][0][0]), int(pose2[i][0][1])))
+        distance += math.dist((int(pose1[i][0][0]), int(pose1[i][0][1])), (int(pose2[i][0][0]), int(pose2[i][0][1])))
+        print(distance)
     return distance
 
+def getScore2(pose1, pose2):
+    if len(pose1) != len(pose2):
+        if len(pose1) < len(pose2):
+            count = len(pose1)
+        else:
+            count = len(pose2)
+    else:
+        count = len(pose1)
+    distance = []
+    for i in range(0, count):
+        print((int(pose1[i][0][0]), int(pose1[i][0][1])))
+        print((int(pose2[i][0][0]), int(pose2[i][0][1])))
+        distance.append(math.dist((int(pose1[i][0][0]), int(pose1[i][0][1])), (int(pose2[i][0][0]), int(pose2[i][0][1]))))
+        print(distance)
+    return distance
 
 def getDeltas(pose1, pose2):
-    deltaX = pose1[5][0] - pose2[5][0]
-    deltaY = pose1[5][1] - pose2[5][1]
-    deltaX += pose1[6][0] - pose2[6][0]
-    deltaY += pose1[6][1] - pose2[6][1]
-    deltaX += pose1[11][0] - pose2[11][0]
-    deltaY += pose1[11][1] - pose2[11][1]
-    deltaX += pose1[12][0] - pose2[12][0]
-    deltaY += pose1[12][1] - pose2[12][1]
+    deltaX = pose1[0][5][0] - pose2[0][5][0]
+    deltaY = pose1[0][5][1] - pose2[0][5][1]
+    deltaX += pose1[0][6][0] - pose2[0][6][0]
+    deltaY += pose1[0][6][1] - pose2[0][6][1]
+    deltaX += pose1[0][11][0] - pose2[0][11][0]
+    deltaY += pose1[0][11][1] - pose2[0][11][1]
+    deltaX += pose1[0][12][0] - pose2[0][12][0]
+    deltaY += pose1[0][12][1] - pose2[0][12][1]
     deltaX /= 4
     deltaY /= 4
     return deltaX, deltaY
 
 def centerModels(pose1, pose2):
     deltaX, deltaY = getDeltas(pose1, pose2)
-    print(deltaX)
-    print(deltaY)
-    print(pose2)
     newPose2 = []
-    for x in range(0, len(pose2)):
+    if len(pose1) != len(pose2):
+        if len(pose1) < len(pose2):
+            count = len(pose1)
+        else:
+            count = len(pose2)
+    else:
+        count = len(pose1)
+    for x in range(0, count):
         newPost = list(pose2[x])
         newPost[0] += deltaX
         newPost[1] += deltaY
         newPose2.append(tuple(newPost))
-    print(newPose2)
     return newPose2
 
 
 def displayPoints(image, points):
     for i in points:
         x, y = i
-        print(int(x))
-        print(int(y))
-        cv2.circle(image,(int(x), int(y)), 5, (255,0,0), -1)
-    cv2.imshow("Points", image)
-    cv2.waitKey(0)   
+        cv2.circle(image,(int(x), int(y)), 5, (0,0,255), -1)
     return image
 
 
@@ -88,7 +109,7 @@ def translateForLimbs(pose1, pose2):
     print("TODO")
     return pose1, pose2
 
-
+'''
 def getVideoKeyPoints(videoPath):
     keyPoints = []
     cap = cv2.VideoCapture(videoPath)
@@ -105,13 +126,12 @@ def getVideoKeyPoints(videoPath):
         cap.release()
         cv2.destroyAllWindows()
     return keyPoints
-
+'''
 
 def readKeyPoints(filePath):
     file = open(filePath, "r")
     lines = file.readlines()
     file.close()
-    print(lines)
     keyPoints = []
     for x in lines:
         line = []
@@ -121,30 +141,26 @@ def readKeyPoints(filePath):
             if y != '':
                 y = y.replace("(", '')
                 res2 = y.split(", ")
-                print(res2)
                 line.append((numpy.float32(res2[0]), numpy.float32(res2[1])))
         keyPoints.append(line)
-    print(keyPoints)
     return keyPoints
 
 
 def writeToFile(videoPath, keyPoints):
     file = open(videoPath.replace(".mp4", "Points.txt"), "w+")
     for x in keyPoints:
-        print(x)
         for y in x:
             file.write("(" + str(y[0]) + ", " + str(y[1]) + ")")
-            print("(" + str(y[0]) + ", " + str(y[1]) + ")")
                 
         file.write('\n')
     file.close()
-    print(keyPoints)
 
 
 def showVideo(videoPath, keyPoints):
     count = 0
     counter = 0
     cap = cv2.VideoCapture(videoPath)
+    out = cv2.VideoWriter('GracePoints2Out.mp4', -1, 20.0, (640,480))
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
@@ -158,32 +174,107 @@ def showVideo(videoPath, keyPoints):
             break
         if count % 20 == 0:
             image = displayPoints(frame, keyPoints[counter])
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            #cv2.imshow("Points", image)
+            #cv2.waitKey(100)   
             counter += 1
         else:
             image = frame
         count += 1
         
-        cv2.imshow("Points", image)
+        out.write(image)
+        #cv2.imshow("Points", image)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     # When everything done, release the capture
     cap.release()
+    out.release()
     cv2.destroyAllWindows()
 
 
-keyPoints = getVideoKeyPoints("Grace1.mp4")
-writeToFile("Grace1.mp4", keyPoints)
-keyPoints = getVideoKeyPoints("Grace2.mp4")
-writeToFile("Grace2.mp4", keyPoints)
-keyPoints = getVideoKeyPoints("Andrew1.mp4")
-writeToFile("Andrew1.mp4", keyPoints)
+def showVideo2(videoPath, keyPoints, score):
+    count = 0
+    counter = 0
+    cap = cv2.VideoCapture(videoPath)
+    out = cv2.VideoWriter('GracePoints2Out.mp4', -1, 20.0, (640,480))
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+    while True:
+        if counter >= len(keyPoints) and counter >= len(score):
+            break
+    # Capture frame-by-frame
+        ret, frame = cap.read()
+
+        # if frame is read correctly ret is True
+        if not ret:
+            print("Can't receive frame (stream end?). Exiting ...")
+            break
+        if count % 20 == 0:
+            image = displayPoints(frame, keyPoints[counter])
+            font = cv2.FONT_HERSHEY_SIMPLEX 
+            org = (50, 50) 
+            fontScale = 1
+            color = (255, 255, 255) 
+            thickness = 2
+            image = cv2.putText(image, 'Score: ' + str(score[counter]), org, font, fontScale, color, thickness, cv2.LINE_AA)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            out.write(image)
+            cv2.imshow("Points", image)
+            cv2.waitKey(100)   
+            counter += 1
+        else:
+            image = frame
+        count += 1
+        
+        out.write(image)
+        #cv2.imshow("Points", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # When everything done, release the capture
+    cap.release()
+    out.release()
+    cv2.destroyAllWindows()
+
+
+#keyPoints = getVideoKeyPoints("Grace1.mp4")
+#writeToFile("Grace1.mp4", keyPoints)
+#keyPoints = getVideoKeyPoints("Grace2.mp4")
+#writeToFile("Grace2.mp4", keyPoints)
+#keyPoints = getVideoKeyPoints("Andrew1.mp4")
+#writeToFile("Andrew1.mp4", keyPoints)
 #print(keyPoints)
-#keypoints = readKeyPoints("outputPoints.txt")
-#showVideo("output.mp4", keypoints)
+keypoints = readKeyPoints("Grace1Points.txt")
+#showVideo("Grace1.mp4", keypoints)
+keypoints2 = readKeyPoints("Grace2Points.txt")
 
+keypoints2 = centerModels(keypoints, keypoints2)
 
-'''current_timestamp = time.time()
+score = getScore2(keypoints, keypoints2)
+
+showVideo2("Grace2.mp4", keypoints2, score)
+
+'''
+score = getScore(keypoints, keypoints2)
+print(score)
+
+keypoints2 = centerModels(keypoints, keypoints2)
+
+score = getScore(keypoints, keypoints2)
+print(score)
+
+current_timestamp = time.time()
 print(current_timestamp)
 pose1, pose2 = getMultipleKeyPoints("BaselineImages\Baseline4.jpg","BaselineImages\Baseline5.jpg")
 
