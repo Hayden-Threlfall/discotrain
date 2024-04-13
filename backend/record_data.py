@@ -6,33 +6,19 @@ import cv2
 import numpy as np
 import time
 import math
-<<<<<<< HEAD
-#from super_gradients.training import models
-#import threading
-=======
 from super_gradients.training import models
 import threading
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
 
 def nothing(x):
     # any operation
     pass
 
-<<<<<<< HEAD
-# def skeleton_detect(imagePath):
-#     global x1,x2,y1,y2
-#     model = models.get("yolo_nas_pose_l", pretrained_weights="coco_pose")
-#     prediction = model.predict(imagePath)
-#     x1, y1, x2, y2 = prediction.prediction.bboxes_xyxy[0]
-#     return int(x1), int(y1), int(x2), int(y2)
-=======
 def skeleton_detect(imagePath):
     global x1,x2,y1,y2
     model = models.get("yolo_nas_pose_l", pretrained_weights="coco_pose")
     prediction = model.predict(imagePath)
     x1, y1, x2, y2 = prediction.prediction.bboxes_xyxy[0]
     return int(x1), int(y1), int(x2), int(y2)
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
     
     
 
@@ -70,27 +56,12 @@ if "__main__":
     font = cv2.FONT_HERSHEY_COMPLEX
     
     
-<<<<<<< HEAD
-    output_file = 'M-D.mp4'  # Output video file name with mp4 extension
-    output_file2 = 'R-D.mp4'
-    output_file3 = 'M-D.avi'  # Output video file name with mp4 extension
-    output_file4 = 'R-D.avi'
-    
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Change codec to mp4v
-    fourcc2 = cv2.VideoWriter_fourcc(*'XVID')  # Change codec to mp4v
-
-    out = cv2.VideoWriter(output_file, fourcc, 20.0, (640, 480))
-    out2 = cv2.VideoWriter(output_file2, fourcc, 20.0, (640, 480))
-    out3 = cv2.VideoWriter(output_file3, fourcc2, 20.0, (640, 480))
-    out4 = cv2.VideoWriter(output_file4, fourcc2, 20.0, (640, 480))
-=======
     output_file = '/videos/output.mp4'  # Output video file name with mp4 extension
     output_file2 = 'videos/output2.mp4'
     
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Change codec to mp4v
     out = cv2.VideoWriter(output_file, fourcc, 20.0, (640, 480))
     out2 = cv2.VideoWriter(output_file2, fourcc, 20.0, (640, 480))
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
     
     begin = time.time()
     count = time.time()
@@ -102,11 +73,7 @@ if "__main__":
     first = True
     while True:
         ret, frame = cap.read()
-<<<<<<< HEAD
-        #print(type(frame))
-=======
         print(type(frame))
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
         #print(frame.shape)
         frameCenter = (frame.shape[1] // 2, frame.shape[0] // 2)
                 
@@ -123,13 +90,6 @@ if "__main__":
             except:
                 pass
         
-<<<<<<< HEAD
-            # if(first ):
-            #     skeleton_detect(frame)
-            #     first = False
-
-            #frame = crop_frame(frame, x1, y1, x2, y2)       
-=======
             if(first ):
                 data_thread = threading.Thread(target = skeleton_detect, args=(frame,))
                 data_thread.daemon = True
@@ -137,7 +97,6 @@ if "__main__":
                 first = False
 
             frame = crop_frame(frame, x1, y1, x2, y2)       
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
             l_h = cv2.getTrackbarPos("L-H", "Trackbars")
             l_s = cv2.getTrackbarPos("L-S", "Trackbars")
             l_v = cv2.getTrackbarPos("L-V", "Trackbars")
@@ -215,23 +174,12 @@ if "__main__":
             except:
                 pass
 
-<<<<<<< HEAD
-            if(time.time()-begin > 30):
-               # print("Scouting videos")
-                m = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
-                
-                out.write(m)
-                out2.write(frame)
-                out3.write(m)
-                out4.write(frame)
-=======
             if(time.time()-begin > 10):
                 print("Scouting videos")
                 m = cv2.cvtColor(mask, cv2.COLOR_GRAY2RGB)
                 
                 out.write(mask)
                 out2.write(frame)
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
             cv2.imshow("Frame", frame)
             cv2.imshow("Mask", mask)
             
@@ -245,10 +193,6 @@ if "__main__":
             break
     
     out.release() 
-<<<<<<< HEAD
-    out2.release()
-=======
->>>>>>> 9abaaae8bd8566afa9fc232c2548105ac5ccb803
     cap.release()
     cv2.destroyAllWindows()
     
