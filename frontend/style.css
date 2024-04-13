@@ -153,10 +153,13 @@ header {
 .song-title {
     font-size: 30px;
     max-width: 250px;
+    color:white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    font-weight: 600;
 }
 
 .banner .content h4 {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.75);
     font-weight: 400;
     font-size: 20px;
 }
