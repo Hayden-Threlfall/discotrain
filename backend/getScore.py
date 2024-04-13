@@ -266,6 +266,7 @@ def displayBothVideos(videoPath, keyPoints, videoPath2, keyPoints2, score):
                         image = displayPoints(f, keyPoints[counter])
                         cv2.imshow(window_titles[i], image)
                         cv2.waitKey(100)   
+                        counter += 1
                     else:
                         image = f
                     count += 1
@@ -279,8 +280,8 @@ def displayBothVideos(videoPath, keyPoints, videoPath2, keyPoints2, score):
                         fontScale = 1
                         color = (255, 255, 255) 
                         thickness = 2
-                        image2 = cv2.putText(image2, 'Score: ' + str(score[counter]), org, font, fontScale, color, thickness, cv2.LINE_AA)
-                        counter += 1
+                        image2 = cv2.putText(image2, 'Score: ' + str(score[counter2]), org, font, fontScale, color, thickness, cv2.LINE_AA)
+                        counter2 += 1
                         cv2.imshow(window_titles[i], image2)
                         cv2.waitKey(500)   
                     else:
